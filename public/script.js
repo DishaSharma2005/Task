@@ -17,7 +17,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Responsive adjustments
     handleResponsive();
+    fetchTopics();
 });
+function fetchTopics() {
+    fetch('http://localhost:5000/api/topics')
+        .then(res => res.json())
+        .then(data => {
+            const table = document.querySelector('.popular-topics table');
+            
+            // Remove old rows except for header
+            table.querySelectorAll('tr:not(:first-child)').forEach(row => row.remove());
+
+            // Add new rows
+            data.forEach(topic => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${topic.title}</td>
+                    <td>${new Date(topic.last_activity).toLocaleString()}</td>
+                `;
+                table.appendChild(tr);
+            });
+        })
+        .catch(err => {
+            console.error('Error fetching topics:', err);
+        });
+}
+
 
 function initializeCharts() {
     const areaChartOptions = {
